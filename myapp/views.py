@@ -1,16 +1,18 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, JsonResponse
-import json
+from django.http import HttpRequest, JsonResponse
+import requests
 
-def home(request):
-    return HttpResponse("Hello, Django!")
 
-def about(request):
-    return HttpResponse("This is an about page!")
+URL = 'https://randomuser.me/api/?results=30'
 
-def get_data(request):
-    data = {
-        "name": "John",
-        "age": 30
-    }
-    return JsonResponse(data)
+
+def users(request: HttpRequest):
+    response = requests.get(URL)
+    if response.status_code == 200:
+        data = response.json()
+
+        users = data['results']
+        return JsonResponse(users, safe=False)
+
+    return JsonResponse({'error': 'Something went wrong'})
+
